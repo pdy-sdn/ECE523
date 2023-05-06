@@ -1,0 +1,83 @@
+---
+title:  'Project: Study on building parameters'
+subtitle: 'ISTA 421/INFO 521'
+author:
+- name: Student -  [Sudan Pandey]
+  affiliation: [CAEM]
+- name: Instructor -  Cristian Roman-Palacios
+  affiliation: School of Information, University of Arizona, Tucson, AZ
+tags: [R, RStudio, Project]
+format:
+  pdf:
+    toc: true
+    number-sections: true
+    colorlinks: true
+---
+
+This code is to check the correlation of the building parameters, particularly to find the better predictor of the alpha parameter. And index based on GA/EI is selected later to model the linear model to predict the alpha value. Alpha value is an important non dimensional paramter of a building which can be used to define the modal properties of the high rise building.
+
+
+```{r}
+# Load building data
+library(ISLR)
+building <- read.csv("Building.csv")
+summary(building)
+```
+
+
+```{r}
+# Correlation study
+library(ISLR2)
+library(corrplot)
+pairs(building[, 2:13]) 
+  cor(building[, 2:13])
+cor.mat <- cor(building[, 2:13])
+corrplot::corrplot(cor.mat)
+
+#End
+```
+
+
+```{r}
+# Define libraries and load data
+library(ISLR2)
+require(ggplot2)
+require(caret)
+require(tidyverse)
+rawdata <- read.csv("Rawdata.csv")
+summary(rawdata)
+```
+
+```{r}
+# Spliting Data
+head(rawdata)
+dim(rawdata)
+set.seed(1)
+
+plot(rawdata,col = "blue")
+
+inTrain <- createDataPartition(rawdata$a, p = 0.80, list = FALSE)
+
+training <- rawdata[inTrain, ]
+testing <- rawdata[-inTrain, ]
+
+y_train <- training$a
+y_test <- testing$a
+
+x_train <- training$x
+x_test <- testing$x
+
+# END Splitting
+```
+
+  
+```{r}
+# Linear model
+lin_model <- lm(a ~ ., data = training)
+pred <- predict(lin_model, testing)
+(lin_info <- postResample(pred, testing$a))
+summary(lin_model)
+summary(pred)
+
+# END
+```
